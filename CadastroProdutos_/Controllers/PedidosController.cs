@@ -50,13 +50,32 @@ namespace CadastroProdutos_.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "PedidoId,Status,DataPedido,ClienteId,ProdutoId")] Pedido pedido)
+        public ActionResult Create([Bind(Include = "PedidoId,Status,DataPedido,ClienteId,ProdutoId")] Pedido pedido, string itemPedidoQuantidade)
         {
             if (ModelState.IsValid)
             {
-                db.Pedidos.Add(pedido);
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                
+                    ItemPedido item = new ItemPedido();
+                    
+                    db.Pedidos.Add(pedido);
+                    db.SaveChanges();
+
+                    item.Quantidade = Convert.ToInt32(itemPedidoQuantidade);
+                    item.ClientId = pedido.ClienteId;
+                    item.ProdutoId = pedido.ProdutoId;
+                    //var query = db.Pedidos.SqlQuery("select TOP 1 PedidoId from Pedido order by ProdutoId desc");
+                    var query = from p in db.Pedidos.OrderByDescending(p => p.PedidoId)                                
+                                select new { Pedido = p.PedidoId };
+                var result = query.ToList();
+                foreach (var pedidoid in result)
+                {
+                    item.PedidoId = pedidoid.Pedido;
+                    break;
+                }
+                    db.ItemPedidos.Add(item);
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
+                
             }
 
             ViewBag.ClienteId = new SelectList(db.Clientes, "ClienteId", "Nome", pedido.ClienteId);
