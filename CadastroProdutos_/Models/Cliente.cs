@@ -8,6 +8,7 @@ namespace CadastroProdutos_.Models
 {
     public class Cliente
     {
+        [Display(Name = "Cliente")]
         public int ClienteId { get; set; }
         [Display(Name = "Cliente")]
         public string Nome { get; set; }

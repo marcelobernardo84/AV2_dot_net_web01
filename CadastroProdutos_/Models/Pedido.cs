@@ -22,7 +22,9 @@ namespace CadastroProdutos_.Models
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         [Display(Name = "Data Pedido")]
         public DateTime DataPedido { get; set; }
+        [Display(Name = "Cliente")]
         public int ClienteId { get; set; }
+        [Display(Name = "Produto")]
         public int ProdutoId { get; set; }
 
         public virtual Cliente Cliente { get; set; }

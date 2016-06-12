@@ -8,6 +8,7 @@ namespace CadastroProdutos_.Models
 {
     public class Produto
     {
+        [Display(Name = "Produto")]
         public int ProdutoId { get; set; }
 
         public decimal Valor { get; set; }
