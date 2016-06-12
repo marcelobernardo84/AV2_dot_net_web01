@@ -43,6 +43,14 @@
             @Html.DisplayFor(model => model.DataPedido)
         </dd>
 
+        <dt>
+            @Html.DisplayName("Quantidade")
+        </dt>
+
+        <dd>
+            @Html.Raw(ViewBag.ItemPedidoQuantidade)
+        </dd>
+
     </dl>
 
     @using (Html.BeginForm()) {

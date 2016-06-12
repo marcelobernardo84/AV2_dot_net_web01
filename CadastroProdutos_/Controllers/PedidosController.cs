@@ -25,6 +25,8 @@ namespace CadastroProdutos_.Controllers
         // GET: Pedidos/Details/5
         public ActionResult Details(int? id)
         {
+            var quantidade = db.ItemPedidos.SingleOrDefault(i => i.PedidoId == id);
+            ViewBag.ItemPedidoQuantidade = quantidade.Quantidade.ToString();
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -54,27 +56,26 @@ namespace CadastroProdutos_.Controllers
         {
             if (ModelState.IsValid)
             {
-                
-                    ItemPedido item = new ItemPedido();
-                    
-                    db.Pedidos.Add(pedido);
-                    db.SaveChanges();
+                ItemPedido item = new ItemPedido();
+                db.Pedidos.Add(pedido);
+                db.SaveChanges();
 
-                    item.Quantidade = Convert.ToInt32(itemPedidoQuantidade);
-                    item.ClientId = pedido.ClienteId;
-                    item.ProdutoId = pedido.ProdutoId;
-                    //var query = db.Pedidos.SqlQuery("select TOP 1 PedidoId from Pedido order by ProdutoId desc");
-                    var query = from p in db.Pedidos.OrderByDescending(p => p.PedidoId)                                
-                                select new { Pedido = p.PedidoId };
+                item.Quantidade = Convert.ToInt32(itemPedidoQuantidade);
+                item.ClientId = pedido.ClienteId;
+                item.ProdutoId = pedido.ProdutoId;
+                var query = from p in db.Pedidos.OrderByDescending(p => p.PedidoId)
+                            select new { Pedido = p.PedidoId };
                 var result = query.ToList();
                 foreach (var pedidoid in result)
                 {
                     item.PedidoId = pedidoid.Pedido;
                     break;
                 }
-                    db.ItemPedidos.Add(item);
-                    db.SaveChanges();
-                    return RedirectToAction("Index");
+
+                db.ItemPedidos.Add(item);
+                db.SaveChanges();
+                
+                return RedirectToAction("Index");
                 
             }
 
@@ -86,6 +87,9 @@ namespace CadastroProdutos_.Controllers
         // GET: Pedidos/Edit/5
         public ActionResult Edit(int? id)
         {
+            var quantidade = db.ItemPedidos.SingleOrDefault(i => i.PedidoId == id);
+            ViewBag.ItemPedidoQuantidade = quantidade.Quantidade.ToString();
+
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -105,11 +109,16 @@ namespace CadastroProdutos_.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "PedidoId,Status,DataPedido,ClienteId,ProdutoId")] Pedido pedido)
+        public ActionResult Edit([Bind(Include = "PedidoId,Status,DataPedido,ClienteId,ProdutoId")] Pedido pedido, string itemPedidoQuantidade)
         {
             if (ModelState.IsValid)
             {
                 db.Entry(pedido).State = EntityState.Modified;
+                ItemPedido item = db.ItemPedidos.SingleOrDefault(i => i.PedidoId == pedido.PedidoId);
+                item.Quantidade = Convert.ToInt32(itemPedidoQuantidade);
+                item.ClientId = pedido.ClienteId;
+                item.ProdutoId = pedido.ProdutoId;
+
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
@@ -121,6 +130,9 @@ namespace CadastroProdutos_.Controllers
         // GET: Pedidos/Delete/5
         public ActionResult Delete(int? id)
         {
+            var quantidade = db.ItemPedidos.SingleOrDefault(i => i.PedidoId == id);
+            ViewBag.ItemPedidoQuantidade = quantidade.Quantidade.ToString();
+
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -139,7 +151,9 @@ namespace CadastroProdutos_.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             Pedido pedido = db.Pedidos.Find(id);
+            ItemPedido item = db.ItemPedidos.SingleOrDefault(i => i.PedidoId == id);
             db.Pedidos.Remove(pedido);
+            db.ItemPedidos.Remove(item);
             db.SaveChanges();
             return RedirectToAction("Index");
         }
